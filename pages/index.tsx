@@ -1,13 +1,20 @@
-import { useMemo, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useUserStore } from "../libs/userStore";
 import { createClient } from "../libs/graphql";
+import { Contributions } from "../libs/types";
+import { useContributions } from "../libs/github";
 import Login from "../ui/Login";
+import Graph from "../ui/Graph";
 
 const Index = () => {
   const router = useRouter();
 
   const { token, user, login } = useUserStore();
+
+  const [contributions, setContributions] = useState<Array<
+    Array<Contributions>
+  > | null>(null);
 
   useEffect(() => {
     if (router.query.token && router.query.user && router.query.expires) {
@@ -21,56 +28,13 @@ const Index = () => {
     }
   }, [router.query.token, router.query.user, router.query.expires]);
 
-  const client = useMemo(
-    () =>
-      token
-        ? createClient({
-            url: "https://api.github.com/graphql",
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          })
-        : null,
-    [token]
-  );
-
-  const contributions = useMemo(
-    () =>
-      client && user
-        ? client.query({
-            user: [
-              { login: user },
-              {
-                name: true,
-                contributionsCollection: {
-                  contributionCalendar: {
-                    totalContributions: true,
-                    weeks: {
-                      contributionDays: {
-                        contributionCount: true,
-                        date: true,
-                        weekday: true
-                      },
-                      firstDay: true
-                    }
-                  }
-                }
-              }
-            ]
-          })
-        : null,
-    [client]
-  );
+  useContributions(token, user);
 
   if (!token) {
     return <Login />;
   }
 
-  if (!contributions) {
-    return <>Fetching your contributions</>;
-  }
-
-  return <>{token}</>;
+  return <Login />;
 };
 
 export default Index;
