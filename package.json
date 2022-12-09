@@ -14,9 +14,15 @@
     "@types/react-dom": "18.0.9",
     "eslint": "8.29.0",
     "eslint-config-next": "13.0.6",
+    "graphql": "^15.8.0",
     "next": "13.0.6",
+    "next-auth": "^4.18.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "typescript": "4.9.4"
+    "typescript": "4.9.4",
+    "zustand": "^4.1.5"
+  },
+  "devDependencies": {
+    "@genql/cli": "^2.10.0"
   }
 }
