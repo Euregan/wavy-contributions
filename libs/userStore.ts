@@ -1,17 +1,20 @@
 import create from "zustand";
 import { devtools, persist } from "zustand/middleware";
+import { differenceInMilliseconds } from "date-fns";
 
 interface BaseUserState {
-  login: (token: string, expires: number) => void;
+  login: (token: string, user: string, expires: Date) => void;
 }
 
 interface Authentified extends BaseUserState {
   token: string;
-  expires: number;
+  user: string;
+  expires: Date;
 }
 
 interface Anonymous extends BaseUserState {
   token: undefined;
+  user: undefined;
   expires: undefined;
 }
 
@@ -22,10 +25,12 @@ export const useUserStore = create<UserState>()(
     persist(
       set => ({
         token: undefined,
+        user: undefined,
         expires: undefined,
-        login: (token, expires) => {
+        login: (token, user, expires) => {
           set({
             token,
+            user,
             expires
           });
 
@@ -35,7 +40,7 @@ export const useUserStore = create<UserState>()(
                 token: undefined,
                 expires: undefined
               }),
-            expires
+            differenceInMilliseconds(expires, new Date())
           );
         }
       }),
