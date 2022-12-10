@@ -1,4 +1,6 @@
 import { getHours, getWeek } from "date-fns";
+import Card from "./Card";
+import styles from "./Graph.module.css";
 
 interface Week {
   0: number;
@@ -171,11 +173,13 @@ const initializeYear = (): Year => ({
 });
 
 const WIDTH = 200;
-const HEIGHT = 100;
+const HEIGHT = 150;
+
+const STROKE = HEIGHT * 0.003;
 
 const OFFSET = 0.1 * HEIGHT;
 const MARGIN = 0.1 * HEIGHT;
-const PEAK = 0.2 * HEIGHT;
+const PEAK = 0.1 * HEIGHT;
 
 const GAP = (HEIGHT - 2 * MARGIN - OFFSET) / 52;
 const HOUR = (WIDTH - 2 * MARGIN) / 24;
@@ -238,35 +242,46 @@ const Graph = ({ contributions }: Props) => {
   const control2 = controlLeft(maximum);
 
   return (
-    <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`}>
-      {((Object.entries(year) as unknown) as [number, Week][]).map(
-        ([week, hours]) => (
-          <path
-            key={week}
-            stroke="red"
-            strokeWidth={0.5}
-            fill="transparent"
-            d={`M${point(week, 0, hours[0])} ${((Object.entries(
-              hours
-            ) as unknown) as [number, number][])
-              .slice(1)
-              .map(
-                ([hour, count]) =>
-                  `C ${control1(
-                    week,
-                    hour - 1,
-                    hours[((hour - 1) as unknown) as keyof Week]
-                  )}, ${control2(week, hour, count)}, ${point(
-                    week,
-                    hour,
-                    count
-                  )}`
-              )
-              .join(" ")}`}
-          />
-        )
-      )}
-    </svg>
+    <Card>
+      <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className={styles.svg}>
+        <defs>
+          <linearGradient id="gradient" gradientTransform="rotate(90)">
+            <stop offset="0.1%" stop-color="#ffffff" />
+            <stop offset="5%" stop-color="#ffdd2b" />
+            <stop offset="65%" stop-color="#ffa804" />
+            <stop offset="85%" stop-color="#ff7a03" />
+            <stop offset="95%" stop-color="#ff4c04" />
+          </linearGradient>
+        </defs>
+        {((Object.entries(year) as unknown) as [number, Week][]).map(
+          ([week, hours]) => (
+            <path
+              fill="transparent"
+              stroke-width={STROKE}
+              stroke="url(#gradient)"
+              key={week}
+              d={`M${point(week, 0, hours[0])} ${((Object.entries(
+                hours
+              ) as unknown) as [number, number][])
+                .slice(1)
+                .map(
+                  ([hour, count]) =>
+                    `C ${control1(
+                      week,
+                      hour - 1,
+                      hours[((hour - 1) as unknown) as keyof Week]
+                    )}, ${control2(week, hour, count)}, ${point(
+                      week,
+                      hour,
+                      count
+                    )}`
+                )
+                .join(" ")}`}
+            />
+          )
+        )}
+      </svg>
+    </Card>
   );
 };
 
