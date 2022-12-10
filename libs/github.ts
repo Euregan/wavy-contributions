@@ -1,12 +1,12 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { Repository, Commit } from "./types";
 
 const call = async <T>(token: string, url: string): Promise<T> => {
   const response = await fetch(`https://api.github.com/${url}`, {
     headers: {
       Authorization: `Bearer ${token}`,
-      Accept: "application/vnd.github+json"
-    }
+      Accept: "application/vnd.github+json",
+    },
   });
 
   console.log(response.headers.get("link"));
@@ -29,24 +29,24 @@ export const useContributions = (token?: string, user?: string) => {
   useEffect(() => {
     if (token && user) {
       repos(token)
-        .then(repos =>
+        .then((repos) =>
           Promise.all(
             repos.map(({ owner, name }) =>
               commits(token, owner.login, name, user)
             )
           )
         )
-        .then(commits =>
+        .then((commits) =>
           // If the repo is empty (not initialized), it returns an object
-          commits.flatMap(commits => (Array.isArray(commits) ? commits : []))
+          commits.flatMap((commits) => (Array.isArray(commits) ? commits : []))
         )
         .then(
-          commits =>
+          (commits) =>
             commits
               .map(({ commit }) =>
                 commit.author?.date ? new Date(commit.author?.date) : null
               )
-              .filter(x => x) as Array<Date>
+              .filter((x) => x) as Array<Date>
         )
         .then(setContributions);
     }
