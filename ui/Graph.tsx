@@ -213,9 +213,10 @@ const controlRight = (maximum: number) => (
 
 interface Props {
   contributions: Array<Date>;
+  user: string;
 }
 
-const Graph = ({ contributions }: Props) => {
+const Graph = ({ contributions, user }: Props) => {
   const year: Year = initializeYear();
 
   contributions.forEach((date) => {
@@ -237,6 +238,15 @@ const Graph = ({ contributions }: Props) => {
     0
   );
 
+  const total: number = Object.values(year).reduce(
+    (total: number, year: Week) =>
+      Object.values(year).reduce(
+        (total: number, count: number) => count + total,
+        0
+      ) + total,
+    0
+  );
+
   const point = position(maximum);
   const control1 = controlRight(maximum);
   const control2 = controlLeft(maximum);
@@ -253,6 +263,17 @@ const Graph = ({ contributions }: Props) => {
             <stop offset="95%" stop-color="#ff4c04" />
           </linearGradient>
         </defs>
+        <text x={MARGIN} y={MARGIN + OFFSET / 2} fill="white">
+          {user}
+        </text>
+        <text
+          x={WIDTH - MARGIN}
+          y={MARGIN + OFFSET / 2}
+          fill="white"
+          text-anchor="end"
+        >
+          {total} commits
+        </text>
         {((Object.entries(year) as unknown) as [number, Week][]).map(
           ([week, hours]) => (
             <path
