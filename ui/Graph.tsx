@@ -179,6 +179,36 @@ const PEAK = 0.2 * HEIGHT;
 const GAP = (HEIGHT - 2 * MARGIN - OFFSET) / 52;
 const HOUR = (WIDTH - 2 * MARGIN) / 24;
 
+const position = (maximum: number) => (
+  week: number,
+  hour: number,
+  count: number
+) =>
+  `${hour * HOUR + MARGIN} ${MARGIN +
+    OFFSET +
+    week * GAP -
+    (count / maximum) * PEAK}`;
+
+const controlLeft = (maximum: number) => (
+  week: number,
+  hour: number,
+  count: number
+) =>
+  `${hour * HOUR + MARGIN - 0.5 * HOUR} ${MARGIN +
+    OFFSET +
+    week * GAP -
+    (count / maximum) * PEAK}`;
+
+const controlRight = (maximum: number) => (
+  week: number,
+  hour: number,
+  count: number
+) =>
+  `${hour * HOUR + MARGIN + 0.5 * HOUR} ${MARGIN +
+    OFFSET +
+    week * GAP -
+    (count / maximum) * PEAK}`;
+
 interface Props {
   contributions: Array<Date>;
 }
@@ -202,6 +232,10 @@ const Graph = ({ contributions }: Props) => {
     return max > count ? max : count;
   }, 0);
 
+  const point = position(maximum);
+  const control1 = controlRight(maximum);
+  const control2 = controlLeft(maximum);
+
   return (
     <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`}>
       {Object.entries(year).map(([week, hours]) => (
@@ -209,15 +243,18 @@ const Graph = ({ contributions }: Props) => {
           key={week}
           stroke="red"
           strokeWidth={0.5}
-          d={`M${Object.entries(hours)
+          fill="transparent"
+          d={`M${point(week, 0, hours[0])} ${Object.entries(hours)
+            .slice(1)
             .map(
               ([hour, count]) =>
-                `${hour * HOUR + MARGIN} ${MARGIN +
-                  OFFSET +
-                  week * GAP -
-                  (count / maximum) * PEAK}`
+                `C ${control1(week, hour - 1, hours[hour - 1])}, ${control2(
+                  week,
+                  hour,
+                  count
+                )}, ${point(week, hour, count)}`
             )
-            .join(" L")}`}
+            .join(" ")}`}
         />
       ))}
     </svg>

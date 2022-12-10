@@ -111,6 +111,7 @@ const Index = () => {
   }
 
   if (!contributions) {
+    return <Login />;
     return <>Fetching your contributions</>;
   }
 
