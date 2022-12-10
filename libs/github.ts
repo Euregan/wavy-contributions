@@ -9,8 +9,6 @@ const call = async <T>(token: string, url: string): Promise<T> => {
     },
   });
 
-  console.log(response.headers.get("link"));
-
   return response.json();
 };
 

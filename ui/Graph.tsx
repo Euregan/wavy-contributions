@@ -82,6 +82,7 @@ interface Year {
   50: Week;
   51: Week;
   52: Week;
+  53: Week;
 }
 
 const initializeWeek = (): Week => ({
@@ -109,7 +110,7 @@ const initializeWeek = (): Week => ({
   21: 0,
   22: 0,
   23: 0,
-  24: 0
+  24: 0,
 });
 
 const initializeYear = (): Year => ({
@@ -165,7 +166,8 @@ const initializeYear = (): Year => ({
   49: initializeWeek(),
   50: initializeWeek(),
   51: initializeWeek(),
-  52: initializeWeek()
+  52: initializeWeek(),
+  53: initializeWeek(),
 });
 
 const WIDTH = 200;
@@ -183,30 +185,27 @@ const position = (maximum: number) => (
   hour: number,
   count: number
 ) =>
-  `${hour * HOUR + MARGIN} ${MARGIN +
-    OFFSET +
-    week * GAP -
-    (count / maximum) * PEAK}`;
+  `${hour * HOUR + MARGIN} ${
+    MARGIN + OFFSET + week * GAP - (count / maximum) * PEAK
+  }`;
 
 const controlLeft = (maximum: number) => (
   week: number,
   hour: number,
   count: number
 ) =>
-  `${hour * HOUR + MARGIN - 0.5 * HOUR} ${MARGIN +
-    OFFSET +
-    week * GAP -
-    (count / maximum) * PEAK}`;
+  `${hour * HOUR + MARGIN - 0.5 * HOUR} ${
+    MARGIN + OFFSET + week * GAP - (count / maximum) * PEAK
+  }`;
 
 const controlRight = (maximum: number) => (
   week: number,
   hour: number,
   count: number
 ) =>
-  `${hour * HOUR + MARGIN + 0.5 * HOUR} ${MARGIN +
-    OFFSET +
-    week * GAP -
-    (count / maximum) * PEAK}`;
+  `${hour * HOUR + MARGIN + 0.5 * HOUR} ${
+    MARGIN + OFFSET + week * GAP - (count / maximum) * PEAK
+  }`;
 
 interface Props {
   contributions: Array<Date>;
@@ -215,7 +214,7 @@ interface Props {
 const Graph = ({ contributions }: Props) => {
   const year: Year = initializeYear();
 
-  contributions.forEach(date => {
+  contributions.forEach((date) => {
     const week = (getWeek(date) as unknown) as keyof Year;
     const hour = (getHours(date) as unknown) as keyof Week;
 

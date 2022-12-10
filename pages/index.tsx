@@ -32,7 +32,12 @@ const Index = () => {
     return <>Fetching your contributions</>;
   }
 
-  return <Graph contributions={contributions} />;
+  return (
+    <>
+      <Login />
+      <Graph contributions={contributions} />
+    </>
+  );
 };
 
 export default Index;
