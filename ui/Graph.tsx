@@ -1,4 +1,4 @@
-import { getHours, getWeek } from "date-fns";
+import { getHours, getWeek, getYear } from "date-fns";
 import Card from "./Card";
 import styles from "./Graph.module.css";
 
@@ -211,6 +211,12 @@ const controlRight = (maximum: number) => (
     MARGIN + OFFSET + week * GAP - (count / maximum) * PEAK
   }`;
 
+const weekTotal = (week: Week) =>
+  Object.values(week).reduce(
+    (total: number, count: number) => count + total,
+    0
+  );
+
 interface Props {
   contributions: Array<Date>;
   user: string;
@@ -220,15 +226,19 @@ const Graph = ({ contributions, user }: Props) => {
   const year: Year = initializeYear();
 
   contributions.forEach((date) => {
-    const week = (getWeek(date) as unknown) as keyof Year;
-    const hour = (getHours(date) as unknown) as keyof Week;
+    const y = getYear(date);
 
-    year[week][hour] += 1;
+    if (y === 2022) {
+      const week = (getWeek(date) as unknown) as keyof Year;
+      const hour = (getHours(date) as unknown) as keyof Week;
+
+      year[week][hour] += 1;
+    }
   });
 
   const maximum: number = Object.values(year).reduce(
-    (max: number, year: Week) => {
-      const count = Object.values(year).reduce(
+    (max: number, week: Week) => {
+      const count = Object.values(week).reduce(
         (max: number, count: number) => (count > max ? count : max),
         0
       );
@@ -239,11 +249,7 @@ const Graph = ({ contributions, user }: Props) => {
   );
 
   const total: number = Object.values(year).reduce(
-    (total: number, year: Week) =>
-      Object.values(year).reduce(
-        (total: number, count: number) => count + total,
-        0
-      ) + total,
+    (total: number, week: Week) => weekTotal(week) + total,
     0
   );
 
@@ -279,7 +285,7 @@ const Graph = ({ contributions, user }: Props) => {
             <path
               fill="transparent"
               stroke-width={STROKE}
-              stroke="url(#gradient)"
+              stroke={weekTotal(hours) > 0 ? "url(#gradient)" : "#ff4c04"}
               key={week}
               d={`M${point(week, 0, hours[0])} ${((Object.entries(
                 hours
