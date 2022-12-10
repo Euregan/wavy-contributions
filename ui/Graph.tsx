@@ -82,7 +82,6 @@ interface Year {
   50: Week;
   51: Week;
   52: Week;
-  53?: Week;
 }
 
 const initializeWeek = (): Week => ({
@@ -217,20 +216,23 @@ const Graph = ({ contributions }: Props) => {
   const year: Year = initializeYear();
 
   contributions.forEach(date => {
-    const week = getWeek(date);
-    const hour = getHours(date);
+    const week = (getWeek(date) as unknown) as keyof Year;
+    const hour = (getHours(date) as unknown) as keyof Week;
 
     year[week][hour] += 1;
   });
 
-  const maximum: number = Object.values(year).reduce((max, year) => {
-    const count = Object.values(year).reduce(
-      (max, count) => (count > max ? count : max),
-      0
-    );
+  const maximum: number = Object.values(year).reduce(
+    (max: number, year: Week) => {
+      const count = Object.values(year).reduce(
+        (max: number, count: number) => (count > max ? count : max),
+        0
+      );
 
-    return max > count ? max : count;
-  }, 0);
+      return max > count ? max : count;
+    },
+    0
+  );
 
   const point = position(maximum);
   const control1 = controlRight(maximum);
@@ -238,25 +240,33 @@ const Graph = ({ contributions }: Props) => {
 
   return (
     <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`}>
-      {Object.entries(year).map(([week, hours]) => (
-        <path
-          key={week}
-          stroke="red"
-          strokeWidth={0.5}
-          fill="transparent"
-          d={`M${point(week, 0, hours[0])} ${Object.entries(hours)
-            .slice(1)
-            .map(
-              ([hour, count]) =>
-                `C ${control1(week, hour - 1, hours[hour - 1])}, ${control2(
-                  week,
-                  hour,
-                  count
-                )}, ${point(week, hour, count)}`
-            )
-            .join(" ")}`}
-        />
-      ))}
+      {((Object.entries(year) as unknown) as [number, Week][]).map(
+        ([week, hours]) => (
+          <path
+            key={week}
+            stroke="red"
+            strokeWidth={0.5}
+            fill="transparent"
+            d={`M${point(week, 0, hours[0])} ${((Object.entries(
+              hours
+            ) as unknown) as [number, number][])
+              .slice(1)
+              .map(
+                ([hour, count]) =>
+                  `C ${control1(
+                    week,
+                    hour - 1,
+                    hours[((hour - 1) as unknown) as keyof Week]
+                  )}, ${control2(week, hour, count)}, ${point(
+                    week,
+                    hour,
+                    count
+                  )}`
+              )
+              .join(" ")}`}
+          />
+        )
+      )}
     </svg>
   );
 };
