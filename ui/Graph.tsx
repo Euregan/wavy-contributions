@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { getHours, getWeek, getYear } from "date-fns";
 import styles from "./Graph.module.css";
 
@@ -219,9 +220,12 @@ const weekTotal = (week: Week) =>
 interface Props {
   contributions: Array<Date>;
   user: string;
+  token: string;
 }
 
-const Graph = ({ contributions, user }: Props) => {
+const Graph = ({ contributions, user, token }: Props) => {
+  const svg = useRef<SVGSVGElement | null>(null);
+
   const year: Year = initializeYear();
 
   contributions.forEach((date) => {
@@ -256,13 +260,32 @@ const Graph = ({ contributions, user }: Props) => {
   const control1 = controlRight(maximum);
   const control2 = controlLeft(maximum);
 
+  const share = async () => {
+    if (svg.current) {
+      const { url } = await fetch("/api/share", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token,
+          image: btoa(svg.current.outerHTML),
+          year: 2022,
+        }),
+      }).then((response) => response.json());
+    }
+  };
+
   return (
     <svg
+      onClick={share}
+      ref={svg}
       viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
       style={{
         aspectRatio: `${WIDTH}/${HEIGHT}`,
       }}
       className={styles.svg}
+      xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
         <linearGradient id="gradient" gradientTransform="rotate(90)">
