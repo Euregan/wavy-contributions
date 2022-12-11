@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 
@@ -6,7 +7,9 @@ const Preview = () => {
 
   const { user, year } = router.query;
 
-  router.push("/");
+  useEffect(() => {
+    router.push("/");
+  }, []);
 
   return (
     <Head>

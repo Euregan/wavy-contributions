@@ -339,7 +339,7 @@ const Graph = ({ contributions, user, token }: Props) => {
         href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
           "Here's my 2022 open source contribution!"
         )}&url=${encodeURIComponent(
-          `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/image/upload/${user}-2022.svg`
+          `${process.env.NEXT_PUBLIC_PROTOCOL}://${process.env.NEXT_PUBLIC_VERCEL_URL}/github/${user}/2022`
         )}`}
         target="_blank"
       >
