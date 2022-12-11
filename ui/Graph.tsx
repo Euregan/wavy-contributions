@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { getHours, getWeek, getYear } from "date-fns";
 import styles from "./Graph.module.css";
 
@@ -260,9 +260,9 @@ const Graph = ({ contributions, user, token }: Props) => {
   const control1 = controlRight(maximum);
   const control2 = controlLeft(maximum);
 
-  const share = async () => {
+  useEffect(() => {
     if (svg.current) {
-      const { url } = await fetch("/api/share", {
+      fetch("/api/share", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -274,11 +274,10 @@ const Graph = ({ contributions, user, token }: Props) => {
         }),
       }).then((response) => response.json());
     }
-  };
+  }, [svg.current]);
 
   return (
     <svg
-      onClick={share}
       ref={svg}
       viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
       style={{
