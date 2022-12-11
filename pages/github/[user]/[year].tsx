@@ -13,9 +13,9 @@ interface Props {
 const Preview = ({ user, year }: Props) => {
   const router = useRouter();
 
-  useEffect(() => {
-    router.push("/");
-  }, []);
+  // useEffect(() => {
+  //   router.push("/");
+  // }, []);
 
   return (
     <Head>
