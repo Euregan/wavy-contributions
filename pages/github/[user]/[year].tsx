@@ -11,7 +11,7 @@ const Preview = () => {
   return (
     <Head>
       <title>
-        {user}'s {year} open source contributions
+        {user}&apos;s {year} open source contributions
       </title>
       <meta
         property="og:title"
