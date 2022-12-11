@@ -19,15 +19,18 @@ const Preview = ({ user, year }: Props) => {
 
   return (
     <Head>
+      <title>
+        {user}&apos;s {year} open source contributions
+      </title>
       <meta
         property="og:title"
         content={`${user}'s ${year} open source contributions`}
-        key="title"
       />
       <meta
         property="og:image"
         content={`${URL}/api/og?user=${user}&year=${year}`}
       />
+      <meta property="og:url" content={URL} />
       <meta name="twitter:card" content="summary_large_image" />
     </Head>
   );
