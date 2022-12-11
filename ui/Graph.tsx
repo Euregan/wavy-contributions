@@ -1,5 +1,4 @@
 import { getHours, getWeek, getYear } from "date-fns";
-import Card from "./Card";
 import styles from "./Graph.module.css";
 
 interface Week {
@@ -258,57 +257,61 @@ const Graph = ({ contributions, user }: Props) => {
   const control2 = controlLeft(maximum);
 
   return (
-    <Card>
-      <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className={styles.svg}>
-        <defs>
-          <linearGradient id="gradient" gradientTransform="rotate(90)">
-            <stop offset="0.1%" stop-color="#ffffff" />
-            <stop offset="5%" stop-color="#ffdd2b" />
-            <stop offset="65%" stop-color="#ffa804" />
-            <stop offset="85%" stop-color="#ff7a03" />
-            <stop offset="95%" stop-color="#ff4c04" />
-          </linearGradient>
-        </defs>
-        <text x={MARGIN} y={MARGIN + OFFSET / 2} fill="white">
-          {user}
-        </text>
-        <text
-          x={WIDTH - MARGIN}
-          y={MARGIN + OFFSET / 2}
-          fill="white"
-          text-anchor="end"
-        >
-          {total} commits
-        </text>
-        {((Object.entries(year) as unknown) as [number, Week][]).map(
-          ([week, hours]) => (
-            <path
-              fill="transparent"
-              stroke-width={STROKE}
-              stroke={weekTotal(hours) > 0 ? "url(#gradient)" : "#ff4c04"}
-              key={week}
-              d={`M${point(week, 0, hours[0])} ${((Object.entries(
-                hours
-              ) as unknown) as [number, number][])
-                .slice(1)
-                .map(
-                  ([hour, count]) =>
-                    `C ${control1(
-                      week,
-                      hour - 1,
-                      hours[((hour - 1) as unknown) as keyof Week]
-                    )}, ${control2(week, hour, count)}, ${point(
-                      week,
-                      hour,
-                      count
-                    )}`
-                )
-                .join(" ")}`}
-            />
-          )
-        )}
-      </svg>
-    </Card>
+    <svg
+      viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+      style={{
+        aspectRatio: `${WIDTH}/${HEIGHT}`,
+      }}
+      className={styles.svg}
+    >
+      <defs>
+        <linearGradient id="gradient" gradientTransform="rotate(90)">
+          <stop offset="0.1%" stop-color="#ffffff" />
+          <stop offset="5%" stop-color="#ffdd2b" />
+          <stop offset="65%" stop-color="#ffa804" />
+          <stop offset="85%" stop-color="#ff7a03" />
+          <stop offset="95%" stop-color="#ff4c04" />
+        </linearGradient>
+      </defs>
+      <text x={MARGIN} y={MARGIN + OFFSET / 2} fill="white">
+        {user}
+      </text>
+      <text
+        x={WIDTH - MARGIN}
+        y={MARGIN + OFFSET / 2}
+        fill="white"
+        text-anchor="end"
+      >
+        {total} commits
+      </text>
+      {((Object.entries(year) as unknown) as [number, Week][]).map(
+        ([week, hours]) => (
+          <path
+            fill="transparent"
+            stroke-width={STROKE}
+            stroke={weekTotal(hours) > 0 ? "url(#gradient)" : "#ff4c04"}
+            key={week}
+            d={`M${point(week, 0, hours[0])} ${((Object.entries(
+              hours
+            ) as unknown) as [number, number][])
+              .slice(1)
+              .map(
+                ([hour, count]) =>
+                  `C ${control1(
+                    week,
+                    hour - 1,
+                    hours[((hour - 1) as unknown) as keyof Week]
+                  )}, ${control2(week, hour, count)}, ${point(
+                    week,
+                    hour,
+                    count
+                  )}`
+              )
+              .join(" ")}`}
+          />
+        )
+      )}
+    </svg>
   );
 };
 
