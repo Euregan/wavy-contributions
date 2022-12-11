@@ -1,11 +1,15 @@
 import { useEffect } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { GetServerSideProps } from "next";
 
-const Preview = () => {
+interface Props {
+  user: string;
+  year: string;
+}
+
+const Preview = ({ user, year }: Props) => {
   const router = useRouter();
-
-  const { user, year } = router.query;
 
   useEffect(() => {
     router.push("/");
@@ -31,3 +35,14 @@ const Preview = () => {
 };
 
 export default Preview;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { user, year } = context.query;
+
+  return {
+    props: {
+      user,
+      year,
+    },
+  };
+};
