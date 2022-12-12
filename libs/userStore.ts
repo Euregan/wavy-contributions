@@ -1,6 +1,6 @@
-import create from "zustand";
+import create, { createStore } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { differenceInMilliseconds } from "date-fns";
+import { differenceInMilliseconds, isPast } from "date-fns";
 
 interface BaseUserState {
   login: (token: string, user: string, expires: Date) => void;
@@ -20,10 +20,10 @@ interface Anonymous extends BaseUserState {
 
 type UserState = Authentified | Anonymous;
 
-export const useUserStore = create<UserState>()(
+const userStore = createStore<UserState>()(
   devtools(
     persist(
-      set => ({
+      (set) => ({
         token: undefined,
         user: undefined,
         expires: undefined,
@@ -31,22 +31,52 @@ export const useUserStore = create<UserState>()(
           set({
             token,
             user,
-            expires
+            expires,
           });
 
           setTimeout(
             () =>
               set({
                 token: undefined,
-                expires: undefined
+                expires: undefined,
               }),
             differenceInMilliseconds(expires, new Date())
           );
-        }
+        },
       }),
       {
-        name: "wavy-contribution-user"
+        name: "wavy-contributions-user",
+        deserialize: (raw) => {
+          const state = JSON.parse(raw);
+
+          const expires = new Date(state.expires);
+
+          if (isPast(expires)) {
+            return {
+              token: undefined,
+              user: undefined,
+              expires: undefined,
+            };
+          }
+
+          setTimeout(
+            () =>
+              userStore.setState({
+                token: undefined,
+                user: undefined,
+                expires: undefined,
+              }),
+            differenceInMilliseconds(expires, new Date())
+          );
+
+          return {
+            ...state,
+            expires,
+          };
+        },
       }
     )
   )
 );
+
+export const useUserStore = create(userStore);
