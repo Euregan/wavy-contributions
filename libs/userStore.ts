@@ -51,12 +51,6 @@ const userStore = createStore<UserState>()(
 
           const expires = new Date(state.expires);
 
-          console.log(
-            expires,
-            isPast(expires),
-            differenceInMilliseconds(expires, new Date())
-          );
-
           if (isPast(expires)) {
             return {
               state: {
