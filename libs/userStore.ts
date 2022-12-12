@@ -47,31 +47,42 @@ const userStore = createStore<UserState>()(
       {
         name: "wavy-contributions-user",
         deserialize: (raw) => {
-          const state = JSON.parse(raw);
+          const { state, version } = JSON.parse(raw);
 
           const expires = new Date(state.expires);
 
-          if (isPast(expires)) {
-            return {
-              token: undefined,
-              user: undefined,
-              expires: undefined,
-            };
-          }
-
-          setTimeout(
-            () =>
-              userStore.setState({
-                token: undefined,
-                user: undefined,
-                expires: undefined,
-              }),
+          console.log(
+            expires,
+            isPast(expires),
             differenceInMilliseconds(expires, new Date())
           );
 
+          if (isPast(expires)) {
+            return {
+              state: {
+                token: undefined,
+                user: undefined,
+                expires: undefined,
+              },
+              version,
+            };
+          }
+
+          setTimeout(() => {
+            console.log("wat");
+            userStore.setState({
+              token: undefined,
+              user: undefined,
+              expires: undefined,
+            });
+          }, differenceInMilliseconds(expires, new Date()));
+
           return {
-            ...state,
-            expires,
+            state: {
+              ...state,
+              expires,
+            },
+            version,
           };
         },
       }
