@@ -1,24 +1,78 @@
 import { useEffect, useState } from "react";
+import { getYear } from "date-fns";
 import { Repository, Commit } from "./types";
 
-const call = async <T>(token: string, url: string): Promise<T> => {
-  const response = await fetch(`https://api.github.com/${url}`, {
+interface Parameters {
+  page: number;
+  per_page: number;
+  [k: string]: string | number;
+}
+
+const call = async <T>(
+  token: string,
+  url: string,
+  parameters: Parameters,
+  stopCondition: (lastItem: T) => boolean = () => false
+): Promise<Array<T>> => {
+  const query =
+    "?" +
+    Object.entries(parameters)
+      .map(([key, value]) => `${key}=${value}`)
+      .join("&");
+
+  const response = await fetch(`https://api.github.com/${url}${query}`, {
     headers: {
       Authorization: `Bearer ${token}`,
       Accept: "application/vnd.github+json",
     },
   });
 
-  return response.json();
+  if (response.status === 409) {
+    return [];
+  }
+
+  if (!response.ok) {
+    throw "oh no";
+  }
+
+  const results: Array<T> = await response.json();
+
+  const additionalResults =
+    response.headers.has("link") &&
+    (response.headers.get("link") as string).includes('rel="next"') &&
+    !stopCondition(results[results.length - 1])
+      ? await call(
+          token,
+          url,
+          {
+            ...parameters,
+            page: parameters.page + 1,
+          },
+          stopCondition
+        )
+      : [];
+
+  return results.concat(additionalResults);
 };
 
 const repos = (token: string) =>
-  call<Array<Repository>>(token, "user/repos?per_page=100&page=1");
+  call<Repository>(token, "user/repos", { per_page: 100, page: 1 });
 
 const commits = (token: string, owner: string, repo: string, user: string) =>
-  call<Array<Commit>>(
+  call<Commit>(
     token,
-    `repos/${owner}/${repo}/commits?author=${user}&sort=author-date&order=desc&per_page=100&page=1`
+    `repos/${owner}/${repo}/commits`,
+    {
+      per_page: 100,
+      page: 1,
+      author: user,
+      sort: "author-date",
+      order: "desc",
+    },
+    (commit) =>
+      commit.commit.author?.date
+        ? getYear(new Date(commit.commit.author?.date)) < 2022
+        : true
   );
 
 export const useContributions = (token?: string, user?: string) => {
