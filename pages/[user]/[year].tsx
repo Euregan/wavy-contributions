@@ -40,6 +40,7 @@ const Preview = ({ user, year }: Props) => {
           `${process.env.NEXT_PUBLIC_PROTOCOL}://${process.env.NEXT_PUBLIC_VERCEL_URL}/${user}/${year}`
         )}`}
         target="_blank"
+        rel="noreferrer"
       >
         Share your contributions on Twitter
       </a>
