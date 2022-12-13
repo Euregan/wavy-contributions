@@ -9,24 +9,28 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
   const body = await fetch(
     `https://github.com/login/oauth/access_token?client_id=${process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_CLIENT_SECRET}&code=${code}`,
     {
-      method: "POST"
+      method: "POST",
     }
-  ).then(response => response.text());
+  ).then((response) => response.text());
 
   const { access_token, expires_in } = Object.fromEntries(
-    body.split("&").map(part => part.split("="))
+    body.split("&").map((part) => part.split("="))
   );
 
-  const expires = add(new Date(), { seconds: expires_in });
+  const expires = expires_in ? add(new Date(), { seconds: expires_in }) : null;
 
   const { login } = await fetch("https://api.github.com/user", {
     headers: {
-      Authorization: `Bearer ${access_token}`
-    }
-  }).then(response => response.json());
+      Authorization: `Bearer ${access_token}`,
+    },
+  }).then((response) => response.json());
+
+  console.log(body);
 
   response.redirect(
-    `${REDIRECT_URL}?token=${access_token}&expires=${expires.toISOString()}&user=${login}`
+    `${REDIRECT_URL}?token=${access_token}&user=${login}${
+      expires ? `&expires=${expires.toISOString()}` : ""
+    }`
   );
 };
 

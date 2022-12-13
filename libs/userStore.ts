@@ -3,13 +3,13 @@ import { devtools, persist } from "zustand/middleware";
 import { differenceInMilliseconds, isPast } from "date-fns";
 
 interface BaseUserState {
-  login: (token: string, user: string, expires: Date) => void;
+  login: (token: string, user: string, expires?: Date) => void;
 }
 
 interface Authentified extends BaseUserState {
   token: string;
   user: string;
-  expires: Date;
+  expires?: Date;
 }
 
 interface Anonymous extends BaseUserState {
@@ -34,14 +34,16 @@ const userStore = createStore<UserState>()(
             expires,
           });
 
-          setTimeout(
-            () =>
-              set({
-                token: undefined,
-                expires: undefined,
-              }),
-            differenceInMilliseconds(expires, new Date())
-          );
+          if (expires) {
+            setTimeout(
+              () =>
+                set({
+                  token: undefined,
+                  expires: undefined,
+                }),
+              differenceInMilliseconds(expires, new Date())
+            );
+          }
         },
       }),
       {
@@ -49,27 +51,27 @@ const userStore = createStore<UserState>()(
         deserialize: (raw) => {
           const { state, version } = JSON.parse(raw);
 
-          const expires = new Date(state.expires);
+          const expires = state.expires ? new Date(state.expires) : undefined;
+          if (expires) {
+            if (isPast(expires)) {
+              return {
+                state: {
+                  token: undefined,
+                  user: undefined,
+                  expires: undefined,
+                },
+                version,
+              };
+            }
 
-          if (isPast(expires)) {
-            return {
-              state: {
+            setTimeout(() => {
+              userStore.setState({
                 token: undefined,
                 user: undefined,
                 expires: undefined,
-              },
-              version,
-            };
+              });
+            }, differenceInMilliseconds(expires, new Date()));
           }
-
-          setTimeout(() => {
-            console.log("wat");
-            userStore.setState({
-              token: undefined,
-              user: undefined,
-              expires: undefined,
-            });
-          }, differenceInMilliseconds(expires, new Date()));
 
           return {
             state: {

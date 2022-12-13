@@ -11,11 +11,13 @@ const Index = () => {
   const { token, user, login } = useUserStore();
 
   useEffect(() => {
-    if (router.query.token && router.query.user && router.query.expires) {
+    if (router.query.token && router.query.user) {
       login(
         router.query.token as string,
         router.query.user as string,
-        new Date(router.query.expires as string)
+        router.query.expires
+          ? new Date(router.query.expires as string)
+          : undefined
       );
 
       router.push("/");
