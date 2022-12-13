@@ -2,11 +2,14 @@ import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useUserStore } from "../libs/userStore";
 import { useContributions } from "../libs/github";
+import { useHasHydrated } from "../libs/useHasHydrated";
 import Login from "../ui/Login";
 import Graph from "../ui/Graph";
 
 const Index = () => {
   const router = useRouter();
+
+  const hasHydrated = useHasHydrated();
 
   const { token, user, login } = useUserStore();
 
@@ -26,7 +29,7 @@ const Index = () => {
 
   const contributions = useContributions(token, user);
 
-  if (!token) {
+  if (!token || !hasHydrated) {
     return <Login />;
   }
 
