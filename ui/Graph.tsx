@@ -1,6 +1,9 @@
 import { useRef, useEffect } from "react";
+import { useRouter } from "next/router";
 import { getHours, getWeek, getYear } from "date-fns";
 import styles from "./Graph.module.css";
+
+const YEAR = 2022;
 
 interface Week {
   0: number;
@@ -224,6 +227,8 @@ interface Props {
 }
 
 const Graph = ({ contributions, user, token }: Props) => {
+  const router = useRouter();
+
   const svg = useRef<SVGSVGElement | null>(null);
 
   const year: Year = initializeYear();
@@ -231,7 +236,7 @@ const Graph = ({ contributions, user, token }: Props) => {
   contributions.forEach((date) => {
     const y = getYear(date);
 
-    if (y === 2022) {
+    if (y === YEAR) {
       const week = (getWeek(date) as unknown) as keyof Year;
       const hour = (getHours(date) as unknown) as keyof Week;
 
@@ -270,82 +275,70 @@ const Graph = ({ contributions, user, token }: Props) => {
         body: JSON.stringify({
           token,
           image: btoa(svg.current.outerHTML),
-          year: 2022,
+          year: YEAR,
         }),
-      }).then((response) => response.json());
+      }).then(() => router.push(`/${user}/${YEAR}`));
     }
   }, [svg.current]);
 
   return (
-    <>
-      <svg
-        ref={svg}
-        viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-        style={{
-          aspectRatio: `${WIDTH}/${HEIGHT}`,
-        }}
-        className={styles.svg}
-        xmlns="http://www.w3.org/2000/svg"
+    <svg
+      ref={svg}
+      viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+      style={{
+        aspectRatio: `${WIDTH}/${HEIGHT}`,
+      }}
+      className={styles.svg}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        <linearGradient id="gradient" gradientTransform="rotate(90)">
+          <stop offset="0.1%" stop-color="#ffffff" />
+          <stop offset="5%" stop-color="#ffdd2b" />
+          <stop offset="65%" stop-color="#ffa804" />
+          <stop offset="85%" stop-color="#ff7a03" />
+          <stop offset="95%" stop-color="#ff4c04" />
+        </linearGradient>
+      </defs>
+      <text x={MARGIN} y={MARGIN + OFFSET / 2} fill="white">
+        {user}
+      </text>
+      <text
+        x={WIDTH - MARGIN}
+        y={MARGIN + OFFSET / 2}
+        fill="white"
+        text-anchor="end"
       >
-        <defs>
-          <linearGradient id="gradient" gradientTransform="rotate(90)">
-            <stop offset="0.1%" stop-color="#ffffff" />
-            <stop offset="5%" stop-color="#ffdd2b" />
-            <stop offset="65%" stop-color="#ffa804" />
-            <stop offset="85%" stop-color="#ff7a03" />
-            <stop offset="95%" stop-color="#ff4c04" />
-          </linearGradient>
-        </defs>
-        <text x={MARGIN} y={MARGIN + OFFSET / 2} fill="white">
-          {user}
-        </text>
-        <text
-          x={WIDTH - MARGIN}
-          y={MARGIN + OFFSET / 2}
-          fill="white"
-          text-anchor="end"
-        >
-          {total} commits
-        </text>
-        {((Object.entries(year) as unknown) as [number, Week][]).map(
-          ([week, hours]) => (
-            <path
-              fill="transparent"
-              stroke-width={STROKE}
-              stroke={weekTotal(hours) > 0 ? "url(#gradient)" : "#ff4c04"}
-              key={week}
-              d={`M${point(week, 0, hours[0])} ${((Object.entries(
-                hours
-              ) as unknown) as [number, number][])
-                .slice(1)
-                .map(
-                  ([hour, count]) =>
-                    `C ${control1(
-                      week,
-                      hour - 1,
-                      hours[((hour - 1) as unknown) as keyof Week]
-                    )}, ${control2(week, hour, count)}, ${point(
-                      week,
-                      hour,
-                      count
-                    )}`
-                )
-                .join(" ")}`}
-            />
-          )
-        )}
-      </svg>
-      <a
-        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-          "Here's my 2022 open source contribution!"
-        )}&url=${encodeURIComponent(
-          `${process.env.NEXT_PUBLIC_PROTOCOL}://${process.env.NEXT_PUBLIC_VERCEL_URL}/github/${user}/2022`
-        )}`}
-        target="_blank"
-      >
-        Share your contributions on Twitter
-      </a>
-    </>
+        {total} commits
+      </text>
+      {((Object.entries(year) as unknown) as [number, Week][]).map(
+        ([week, hours]) => (
+          <path
+            fill="transparent"
+            stroke-width={STROKE}
+            stroke={weekTotal(hours) > 0 ? "url(#gradient)" : "#ff4c04"}
+            key={week}
+            d={`M${point(week, 0, hours[0])} ${((Object.entries(
+              hours
+            ) as unknown) as [number, number][])
+              .slice(1)
+              .map(
+                ([hour, count]) =>
+                  `C ${control1(
+                    week,
+                    hour - 1,
+                    hours[((hour - 1) as unknown) as keyof Week]
+                  )}, ${control2(week, hour, count)}, ${point(
+                    week,
+                    hour,
+                    count
+                  )}`
+              )
+              .join(" ")}`}
+          />
+        )
+      )}
+    </svg>
   );
 };
 
