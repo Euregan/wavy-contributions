@@ -1,0 +1,14 @@
+.img {
+    width:3.5rem;
+    text-decoration: none;
+  }
+  .title{
+    display:flex;
+    align-items:center;
+    list-style:none;
+    gap: 1rem;
+    color: white;
+    padding-left: 2rem;
+
+  }
+  
