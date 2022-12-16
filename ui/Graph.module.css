@@ -1,7 +1,9 @@
 .container{
   display:grid;
   grid-template-columns:1fr;
-  gap: 3rem
+  gap: 3rem;
+  max-width:50rem;
+  margin: auto;
 }
 
 .svg {
@@ -25,12 +27,17 @@
   letter-spacing:0.02rem;
   background: rgb(42, 44, 85);
   filter: drop-shadow(0 0 0.65rem rgb(42, 44, 85));
-
 }
+
 .text  {
   font-size: 0.5rem;
   height:17px;
 }
+
+.divLink{
+  justify-self: end;
+}
+
 .link{
   border-radius: 50px;
   padding: 0.8rem;
@@ -41,8 +48,4 @@
   font-weight: 600;
   color: #F6F7FF ;
   border: 0.25px solid #323468;
-
-}
-.divLink{
-  justify-self: end;
 }

@@ -1,5 +1,30 @@
-.link {
-  color: #ff4c04;
+.link{
+  border-radius: 50px;
+  padding: 1.5rem;
+  background: #00031b;
   text-decoration: none;
+  color: white;  justify-self: end;
+  filter: drop-shadow(0 0 0.8rem #743ad5);
   font-weight: 600;
+  color: #F6F7FF ;
+  border: 0.25px solid #323468;
+  font-size:1.5rem;
+  letter-spacing: 0.05rem;
+  width: fit-content;
+}
+
+.title{
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+   align-items: center;
+}
+
+.h1{
+  font-size:8rem;
+}
+
+.color{
+  color: #828fff;
 }
