@@ -1,17 +1,20 @@
 import Head from "next/head";
-import Image from "next/image";
 import { GetServerSideProps } from "next";
+import { useYear } from "../../libs/stats";
 import Container from "../../ui/Container";
-import styles from "./Profile.module.css";
+import GraphCard from "../../ui/GraphCard";
+import TwitterShare from "../../ui/TwitterShare";
 
 const URL = `${process.env.NEXT_PUBLIC_PROTOCOL}://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
 
 interface Props {
   user: string;
-  year: string;
+  year: number;
 }
 
 const Profile = ({ user, year }: Props) => {
+  const stats = useYear(year, { user });
+
   return (
     <Container>
       <Head>
@@ -26,24 +29,10 @@ const Profile = ({ user, year }: Props) => {
         <meta property="og:url" content={URL} />
         <meta name="twitter:card" content="summary_large_image" />
       </Head>
-      <Image
-        src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/image/upload/${user}-${year}.svg`}
-        alt={`${user}'s ${year} commits`}
-        width={1200}
-        height={630}
-        className={styles.image}
-      />
-      <a
-        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-          `Here's my ${year} commits!`
-        )}&url=${encodeURIComponent(
-          `${process.env.NEXT_PUBLIC_PROTOCOL}://${process.env.NEXT_PUBLIC_VERCEL_URL}/${user}/${year}`
-        )}`}
-        target="_blank"
-        rel="noreferrer"
-      >
-        Share your contributions on Twitter
-      </a>
+
+      {stats && <GraphCard year={stats} user={user} />}
+
+      <TwitterShare user={user} year={year} />
     </Container>
   );
 };
@@ -56,7 +45,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       user,
-      year,
+      year: parseInt(year as string),
     },
   };
 };

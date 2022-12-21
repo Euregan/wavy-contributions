@@ -1,5 +1,6 @@
 import { add } from "date-fns";
 import { NextApiRequest, NextApiResponse } from "next";
+import database from "../../../libs/database";
 
 const REDIRECT_URL = `${process.env.NEXT_PUBLIC_PROTOCOL}://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
 
@@ -25,7 +26,18 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
     },
   }).then((response) => response.json());
 
-  console.log(body);
+  await database.user.upsert({
+    create: {
+      handle: login,
+      lastChecked: new Date(),
+    },
+    update: {
+      lastChecked: new Date(),
+    },
+    where: {
+      handle: login,
+    },
+  });
 
   response.redirect(
     `${REDIRECT_URL}?token=${access_token}&user=${login}${
