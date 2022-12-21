@@ -267,10 +267,8 @@ export interface Commit {
     tree: {
       sha: string;
       url: string;
-      [k: string]: unknown;
     };
     verification?: Verification;
-    [k: string]: unknown;
   };
   author: null | SimpleUser;
   committer: null | SimpleUser;
@@ -278,13 +276,11 @@ export interface Commit {
     sha: string;
     url: string;
     html_url?: string;
-    [k: string]: unknown;
   }[];
   stats?: {
     additions?: number;
     deletions?: number;
     total?: number;
-    [k: string]: unknown;
   };
   files?: DiffEntry[];
 }
@@ -327,4 +323,89 @@ export interface Contributions {
   contributionCount: number;
   date: Date;
   weekday: number;
+}
+
+export interface Week {
+  0: number;
+  1: number;
+  2: number;
+  3: number;
+  4: number;
+  5: number;
+  6: number;
+  7: number;
+  8: number;
+  9: number;
+  10: number;
+  11: number;
+  12: number;
+  13: number;
+  14: number;
+  15: number;
+  16: number;
+  17: number;
+  18: number;
+  19: number;
+  20: number;
+  21: number;
+  22: number;
+  23: number;
+  24: number;
+}
+
+export interface Year {
+  0: Week;
+  1: Week;
+  2: Week;
+  3: Week;
+  4: Week;
+  5: Week;
+  6: Week;
+  7: Week;
+  8: Week;
+  9: Week;
+  10: Week;
+  11: Week;
+  12: Week;
+  13: Week;
+  14: Week;
+  15: Week;
+  16: Week;
+  17: Week;
+  18: Week;
+  19: Week;
+  20: Week;
+  21: Week;
+  22: Week;
+  23: Week;
+  24: Week;
+  25: Week;
+  26: Week;
+  27: Week;
+  28: Week;
+  29: Week;
+  30: Week;
+  31: Week;
+  32: Week;
+  33: Week;
+  34: Week;
+  35: Week;
+  36: Week;
+  37: Week;
+  38: Week;
+  39: Week;
+  40: Week;
+  41: Week;
+  42: Week;
+  43: Week;
+  44: Week;
+  45: Week;
+  46: Week;
+  47: Week;
+  48: Week;
+  49: Week;
+  50: Week;
+  51: Week;
+  52: Week;
+  53: Week;
 }
