@@ -1,5 +1,5 @@
 import type { Year, Week } from "../libs/types";
-import { maximum, weekTotal } from "../libs/stats";
+import { peak } from "../libs/stats";
 
 const WIDTH = 200;
 const HEIGHT = 150;
@@ -7,45 +7,48 @@ const HEIGHT = 150;
 const STROKE = HEIGHT * 0.003;
 
 const MARGIN = STROKE / 2;
-const PEAK = 0.1 * HEIGHT;
 
-const GAP = (HEIGHT - 2 * MARGIN - PEAK) / 52;
 const HOUR = WIDTH / 24;
 
-const position = (maximum: number) => (
-  week: number,
-  hour: number,
-  count: number
-) => `${hour * HOUR} ${MARGIN + PEAK + week * GAP - (count / maximum) * PEAK}`;
+const gap = (padding: number) => (HEIGHT - 2 * MARGIN - padding) / 53;
 
-const controlLeft = (maximum: number) => (
-  week: number,
-  hour: number,
-  count: number
-) =>
-  `${hour * HOUR - 0.5 * HOUR} ${
-    MARGIN + PEAK + week * GAP - (count / maximum) * PEAK
-  }`;
+const positionY = (week: number, count: number, padding: number = 0) =>
+  padding +
+  MARGIN +
+  week * gap(padding) -
+  (count === 0 ? 0 : Math.log(count) * 3);
 
-const controlRight = (maximum: number) => (
+const position = (week: number, hour: number, count: number, padding: number) =>
+  `${hour * HOUR} ${positionY(week, count, padding)}`;
+
+const controlLeft = (
   week: number,
   hour: number,
-  count: number
-) =>
-  `${hour * HOUR + 0.5 * HOUR} ${
-    MARGIN + PEAK + week * GAP - (count / maximum) * PEAK
-  }`;
+  count: number,
+  padding: number
+) => `${hour * HOUR - 0.5 * HOUR} ${positionY(week, count, padding)}`;
+
+const controlRight = (
+  week: number,
+  hour: number,
+  count: number,
+  padding: number
+) => `${hour * HOUR + 0.5 * HOUR} ${positionY(week, count, padding)}`;
 
 interface Props {
   year: Year;
 }
 
 const Graph = ({ year }: Props) => {
-  const max = maximum(year);
-
-  const point = position(max);
-  const control1 = controlRight(max);
-  const control2 = controlLeft(max);
+  const padding =
+    MARGIN -
+    Object.values(year).reduce((min: number, week: Week, index) => {
+      const count = Object.values(week).reduce((min: number, count: number) => {
+        const position = positionY(index, count);
+        return position < min ? position : min;
+      }, 0);
+      return min < count ? min : count;
+    }, 0);
 
   return (
     <svg
@@ -70,22 +73,24 @@ const Graph = ({ year }: Props) => {
           <path
             fill="transparent"
             stroke-width={STROKE}
-            stroke={weekTotal(hours) > 0 ? "url(#gradient)" : "#828fff"}
+            stroke={peak(hours) < 2 ? "#828fff" : "url(#gradient)"}
             key={week}
-            d={`M${point(week, 0, hours[0])} ${((Object.entries(
+            d={`M${position(week, 0, hours[0], padding)} ${((Object.entries(
               hours
             ) as unknown) as [number, number][])
               .slice(1)
               .map(
                 ([hour, count]) =>
-                  `C ${control1(
+                  `C ${controlRight(
                     week,
                     hour - 1,
-                    hours[((hour - 1) as unknown) as keyof Week]
-                  )}, ${control2(week, hour, count)}, ${point(
+                    hours[((hour - 1) as unknown) as keyof Week],
+                    padding
+                  )}, ${controlLeft(week, hour, count, padding)}, ${position(
                     week,
                     hour,
-                    count
+                    count,
+                    padding
                   )}`
               )
               .join(" ")}`}

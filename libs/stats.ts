@@ -101,25 +101,19 @@ export const graph = (commits: Array<Commit>): Year => {
   return year;
 };
 
-export const maximum = (year: Year): number =>
-  Object.values(year).reduce((max: number, week: Week) => {
-    const count = Object.values(week).reduce(
-      (max: number, count: number) => (count > max ? count : max),
-      0
-    );
-
-    return max > count ? max : count;
-  }, 0);
-
-export const weekTotal = (week: Week) =>
+export const peak = (week: Week): number =>
   Object.values(week).reduce(
-    (total: number, count: number) => count + total,
+    (max: number, count: number) => (count > max ? count : max),
     0
   );
 
 export const total = (year: Year): number =>
   Object.values(year).reduce(
-    (total: number, week: Week) => weekTotal(week) + total,
+    (total: number, week: Week) =>
+      Object.values(week).reduce(
+        (total: number, count: number) => count + total,
+        0
+      ) + total,
     0
   );
 
