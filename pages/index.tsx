@@ -7,6 +7,7 @@ import Container from "../ui/Container";
 import Login from "../ui/Login";
 import GraphCard from "../ui/GraphCard";
 import TwitterShare from "../ui/TwitterShare";
+import Loading from "../ui/Loading";
 
 const YEAR = 2022;
 
@@ -50,7 +51,11 @@ const Index = () => {
   }
 
   if (!stats) {
-    return <>Fetching your contributions</>;
+    return (
+      <Container>
+        <Loading slow />
+      </Container>
+    );
   }
 
   return (

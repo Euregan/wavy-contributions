@@ -1,6 +1,7 @@
 .layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  gap: 2rem;
   background: linear-gradient(#00031b, #14162d);
   border-radius: 10px;
   overflow: hidden;

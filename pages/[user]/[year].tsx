@@ -4,6 +4,7 @@ import { useYear } from "../../libs/stats";
 import Container from "../../ui/Container";
 import GraphCard from "../../ui/GraphCard";
 import TwitterShare from "../../ui/TwitterShare";
+import Loading from "../../ui/Loading";
 
 const URL = `${process.env.NEXT_PUBLIC_PROTOCOL}://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
 
@@ -30,6 +31,7 @@ const Profile = ({ user, year }: Props) => {
         <meta name="twitter:card" content="summary_large_image" />
       </Head>
 
+      {!stats && <Loading />}
       {stats && <GraphCard year={stats} user={user} />}
 
       <TwitterShare user={user} year={year} />
