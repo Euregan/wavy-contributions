@@ -11,15 +11,8 @@ const HEIGHT = 630;
 
 export default async function handler(req: NextRequest) {
   const { searchParams } = req.nextUrl;
-  const user = searchParams.get("user");
-  const year = searchParams.get("year");
-
-  if (!user || !year) {
-    return new ImageResponse(<>Wavy contributions</>, {
-      width: WIDTH,
-      height: HEIGHT,
-    });
-  }
+  const user = searchParams.get("user") || "Euregan";
+  const year = searchParams.get("year") || "2022";
 
   const stats = await fetch(
     `${process.env.NEXT_PUBLIC_PROTOCOL}://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/stats/${year}/${user}`

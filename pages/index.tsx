@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import type { Year } from "../libs/types";
 import { useUserStore } from "../libs/userStore";
@@ -10,6 +11,8 @@ import TwitterShare from "../ui/TwitterShare";
 import Loading from "../ui/Loading";
 
 const YEAR = 2022;
+
+const URL = `${process.env.NEXT_PUBLIC_PROTOCOL}://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
 
 const Index = () => {
   const router = useRouter();
@@ -47,7 +50,18 @@ const Index = () => {
   }, [token]);
 
   if (!token || !hasHydrated) {
-    return <Login />;
+    return (
+      <>
+        <Head>
+          <title>Make a graph from your commits!</title>
+          <meta property="og:title" content="Make a graph from your commits!" />
+          <meta property="og:image" content={`${URL}/api/og?year=${YEAR}`} />
+          <meta property="og:url" content={URL} />
+          <meta name="twitter:card" content="summary_large_image" />
+        </Head>
+        <Login />
+      </>
+    );
   }
 
   if (!stats) {
