@@ -28,3 +28,21 @@
 .color{
   color: #828fff;
 }
+
+@media screen and (max-width:780px){
+
+  .h1 {
+    font-size:5rem;
+    padding: 0 1rem;
+  }
+}
+
+@media screen and (max-width:480px){
+  .link {
+    padding: 1.2rem;
+    font-size: 1.2rem;
+  }
+  .h1 {
+    font-size:3.5rem;
+  }
+}
