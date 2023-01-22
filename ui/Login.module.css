@@ -1,48 +1,35 @@
-.link{
+.link {
   border-radius: 50px;
-  padding: 1.5rem;
+  padding: 1.4rem 2rem;
   background: #00031b;
   text-decoration: none;
-  color: white;  justify-self: end;
-  filter: drop-shadow(0 0 0.8rem #743ad5);
+  box-shadow: 0 0 2rem #743ad5;
   font-weight: 600;
-  color: #F6F7FF ;
+  color: #f6f7ff;
   border: 0.25px solid #323468;
-  font-size:1.5rem;
+  font-size: 1.5rem;
   letter-spacing: 0.05rem;
   width: fit-content;
+  transition: all 0.2s;
+  margin: 6rem auto;
 }
 
-.title{
+.link:hover {
+  box-shadow: 0 0 4rem #743ad5;
+}
+
+.login {
   text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: center; 
-   align-items: center;
+  justify-content: center;
+  align-items: center;
 }
 
-.h1{
-  font-size:8rem;
+.catchphrase {
+  font-size: 8rem;
 }
 
-.color{
+.coloredWord {
   color: #828fff;
-}
-
-@media screen and (max-width:780px){
-
-  .h1 {
-    font-size:5rem;
-    padding: 0 1rem;
-  }
-}
-
-@media screen and (max-width:480px){
-  .link {
-    padding: 1.2rem;
-    font-size: 1.2rem;
-  }
-  .h1 {
-    font-size:3.5rem;
-  }
 }

@@ -12,7 +12,7 @@ const call = async <T>(
   token: string,
   url: string,
   parameters: Parameters,
-  stopCondition: (lastItem: T) => boolean = () => false
+  shouldStop: (lastItem: T) => boolean = () => false
 ): Promise<Array<T>> => {
   const query =
     "?" +
@@ -32,6 +32,8 @@ const call = async <T>(
   }
 
   if (!response.ok) {
+    console.error(response.status);
+    console.error(response.body);
     throw "oh no";
   }
 
@@ -40,7 +42,7 @@ const call = async <T>(
   const additionalResults =
     response.headers.has("link") &&
     (response.headers.get("link") as string).includes('rel="next"') &&
-    !stopCondition(results[results.length - 1])
+    !shouldStop(results[results.length - 1])
       ? await call(
           token,
           url,
@@ -48,17 +50,23 @@ const call = async <T>(
             ...parameters,
             page: parameters.page + 1,
           },
-          stopCondition
+          shouldStop
         )
       : [];
 
   return results.concat(additionalResults);
 };
 
-const repos = (token: string) =>
+export const repos = (token: string) =>
   call<Repository>(token, "user/repos", { per_page: 100, page: 1 });
 
-const commits = (token: string, owner: string, repo: string, user: string) =>
+export const commits = (
+  token: string,
+  owner: string,
+  repo: string,
+  user: string,
+  year: number
+) =>
   call<Commit>(
     token,
     `repos/${owner}/${repo}/commits`,
@@ -71,38 +79,6 @@ const commits = (token: string, owner: string, repo: string, user: string) =>
     },
     (commit) =>
       commit.commit.author?.date
-        ? getYear(new Date(commit.commit.author?.date)) < 2022
-        : true
+        ? getYear(new Date(commit.commit.author?.date)) < year
+        : false
   );
-
-export const useContributions = (token?: string, user?: string) => {
-  const [contributions, setContributions] = useState<Array<Date> | null>(null);
-
-  useEffect(() => {
-    if (token && user) {
-      repos(token)
-        .then((repos) =>
-          Promise.all(
-            repos.map(({ owner, name }) =>
-              commits(token, owner.login, name, user)
-            )
-          )
-        )
-        .then((commits) =>
-          // If the repo is empty (not initialized), it returns an object
-          commits.flatMap((commits) => (Array.isArray(commits) ? commits : []))
-        )
-        .then(
-          (commits) =>
-            commits
-              .map(({ commit }) =>
-                commit.author?.date ? new Date(commit.author?.date) : null
-              )
-              .filter((x) => x) as Array<Date>
-        )
-        .then(setContributions);
-    }
-  }, [token, user]);
-
-  return contributions;
-};

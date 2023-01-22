@@ -1,0 +1,29 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  max-width: 50rem;
+  margin: 6rem auto;
+}
+
+@media (max-width: calc(800px + 8 * 16px)) {
+  .container {
+    margin: 4rem 4rem;
+    max-width: auto;
+  }
+}
+
+@media (max-width: calc(720px + 4 * 16px)) {
+  .container {
+    margin: 3rem 2rem;
+    max-width: auto;
+  }
+}
+
+@media (max-width: 400px) {
+  .container {
+    margin: 2rem 1rem;
+    max-width: auto;
+    gap: 2rem;
+  }
+}

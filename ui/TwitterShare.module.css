@@ -1,0 +1,16 @@
+.link {
+  border-radius: 50px;
+  padding: 0.8rem 1.3rem;
+  background: #00031b;
+  text-decoration: none;
+  align-self: end;
+  box-shadow: 0 0 0.9rem rgb(42, 44, 85);
+  font-weight: 600;
+  color: #f6f7ff;
+  border: 0.25px solid #323468;
+  transition: all 0.2s;
+}
+
+.link:hover {
+  box-shadow: 0 0 2rem rgb(42, 44, 85);
+}

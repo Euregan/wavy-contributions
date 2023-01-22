@@ -1,13 +1,19 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import type { Year } from "../libs/types";
 import { useUserStore } from "../libs/userStore";
-import { useContributions } from "../libs/github";
 import { useHasHydrated } from "../libs/useHasHydrated";
+import Container from "../ui/Container";
 import Login from "../ui/Login";
-import Graph from "../ui/Graph";
+import GraphCard from "../ui/GraphCard";
+import TwitterShare from "../ui/TwitterShare";
+
+const YEAR = 2022;
 
 const Index = () => {
   const router = useRouter();
+
+  const [stats, setStats] = useState<Year | null>(null);
 
   const hasHydrated = useHasHydrated();
 
@@ -27,17 +33,32 @@ const Index = () => {
     }
   }, [router.query.token, router.query.user, router.query.expires]);
 
-  const contributions = useContributions(token, user);
+  useEffect(() => {
+    if (token) {
+      fetch(`/api/stats/${YEAR}`, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      })
+        .then((response) => response.json())
+        .then(setStats);
+    }
+  }, [token]);
 
   if (!token || !hasHydrated) {
     return <Login />;
   }
 
-  if (!contributions) {
+  if (!stats) {
     return <>Fetching your contributions</>;
   }
 
-  return <Graph contributions={contributions} user={user} token={token} />;
+  return (
+    <Container>
+      <GraphCard year={stats} user={user} />
+      <TwitterShare user={user} year={YEAR} />
+    </Container>
+  );
 };
 
 export default Index;
