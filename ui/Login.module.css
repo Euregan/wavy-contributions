@@ -3,10 +3,9 @@
   padding: 1.4rem 2rem;
   background: #00031b;
   text-decoration: none;
-  box-shadow: 0 0 2rem #743ad5;
   font-weight: 600;
   color: #f6f7ff;
-  border: 0.25px solid #323468;
+  border: 1.5px solid #323468;
   font-size: 1.5rem;
   letter-spacing: 0.05rem;
   width: fit-content;
@@ -15,7 +14,7 @@
 }
 
 .link:hover {
-  box-shadow: 0 0 4rem #743ad5;
+  box-shadow: 0 0 2rem #743ad5;
 }
 
 .login {
